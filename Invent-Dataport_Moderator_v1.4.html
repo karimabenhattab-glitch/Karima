@@ -1,0 +1,797 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; font-src data:; connect-src 'self'">
+<title>Moderator-Ansicht – Invent ♥ Dataport Community</title>
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzFBNjJBOCIvPjwvc3ZnPg==">
+<style>
+/* Design tokens: all colours are CSS variables (light, dark, auto). */
+:root {
+  --bg: #F4F8FC; --surface: #FFFFFF; --surface2: #EAF1F8;
+  --text: #0B2A4A; --text2: #3F5570;
+  --accent: #1A62A8; --on-accent: #FFFFFF; --accent-soft: #D6E7F7;
+  --line: #B7C9DC; --track: #D9E5F1;
+  --demo-bg: #FFF3D6; --demo-text: #5A4100; --demo-line: #E3C777;
+  --hdr-bg: #0B2A4A; --hdr-text: #FFFFFF; --hdr-text2: #C9D8EA; --hdr-line: #46678C; --hdr-num: #1F4470; --hdr-on: #FFFFFF; --hdr-on-text: #0B2A4A;
+  --w0: #1A62A8; --w1: #0B2A4A; --w2: #1B6B3F; --w3: #B01E32;
+  --gold: #D9AE3C;
+  --snow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cg fill='%231A62A8' fill-opacity='.09'%3E%3Ccircle cx='24' cy='36' r='2.5'/%3E%3Ccircle cx='110' cy='20' r='1.5'/%3E%3Ccircle cx='180' cy='70' r='2'/%3E%3Ccircle cx='60' cy='120' r='1.5'/%3E%3Ccircle cx='140' cy='150' r='2.5'/%3E%3Ccircle cx='200' cy='200' r='1.5'/%3E%3Ccircle cx='30' cy='190' r='2'/%3E%3C/g%3E%3C/svg%3E");
+  --shadow: 0 1px 2px rgba(11,42,74,.08), 0 6px 20px rgba(11,42,74,.06);
+  --radius: 16px; --footer-h: 64px;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0A1626; --surface: #112338; --surface2: #172F4A;
+    --text: #EAF1F9; --text2: #B4C4D8;
+    --accent: #86BDF2; --on-accent: #0A1626; --accent-soft: #1D3A5A;
+    --line: #3A5A7E; --track: #23405F;
+    --demo-bg: #3A2F10; --demo-text: #F5DFA0; --demo-line: #7A6420;
+    --hdr-bg: #071221; --hdr-num: #1A3555; --hdr-line: #46678C;
+    --w0: #86BDF2; --w1: #EAF1F9; --w2: #7FD9A2; --w3: #FF9AA8;
+  --snow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cg fill='%23FFFFFF' fill-opacity='.10'%3E%3Ccircle cx='24' cy='36' r='2.5'/%3E%3Ccircle cx='110' cy='20' r='1.5'/%3E%3Ccircle cx='180' cy='70' r='2'/%3E%3Ccircle cx='60' cy='120' r='1.5'/%3E%3Ccircle cx='140' cy='150' r='2.5'/%3E%3Ccircle cx='200' cy='200' r='1.5'/%3E%3Ccircle cx='30' cy='190' r='2'/%3E%3C/g%3E%3C/svg%3E");
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 20px rgba(0,0,0,.3);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0A1626; --surface: #112338; --surface2: #172F4A;
+  --text: #EAF1F9; --text2: #B4C4D8;
+  --accent: #86BDF2; --on-accent: #0A1626; --accent-soft: #1D3A5A;
+  --line: #3A5A7E; --track: #23405F;
+  --demo-bg: #3A2F10; --demo-text: #F5DFA0; --demo-line: #7A6420;
+  --hdr-bg: #071221; --hdr-num: #1A3555; --hdr-line: #46678C;
+  --w0: #86BDF2; --w1: #EAF1F9; --w2: #7FD9A2; --w3: #FF9AA8;
+  --snow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cg fill='%23FFFFFF' fill-opacity='.10'%3E%3Ccircle cx='24' cy='36' r='2.5'/%3E%3Ccircle cx='110' cy='20' r='1.5'/%3E%3Ccircle cx='180' cy='70' r='2'/%3E%3Ccircle cx='60' cy='120' r='1.5'/%3E%3Ccircle cx='140' cy='150' r='2.5'/%3E%3Ccircle cx='200' cy='200' r='1.5'/%3E%3Ccircle cx='30' cy='190' r='2'/%3E%3C/g%3E%3C/svg%3E");
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 20px rgba(0,0,0,.3);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { font-size: 100%; }
+body.presenter { font-size: 125%; }
+body {
+  margin: 0; background: var(--bg) var(--snow); color: var(--text);
+  font-family: var(--font); font-size: 1rem; line-height: 1.55; font-weight: 400;
+  padding-bottom: calc(var(--footer-h) + 28px);
+}
+h1, h2, h3 { line-height: 1.2; margin: 0 0 .5em; font-weight: 700; letter-spacing: -.01em; }
+h1 { font-size: clamp(1.7rem, 4.5vw, 2.6rem); }
+h2 { font-size: 1.3rem; }
+h3 { font-size: 1.05rem; }
+p { margin: 0 0 1em; }
+.muted { color: var(--text2); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+h1:focus { outline: none; }
+
+.skip { position: absolute; left: 12px; top: -60px; background: var(--accent); color: var(--on-accent); padding: 8px 14px; border-radius: 8px; z-index: 50; }
+.skip:focus { top: 8px; }
+
+/* Header */
+header.top {
+  position: sticky; top: 0; z-index: 20; background: var(--hdr-bg) var(--snow); color: var(--hdr-text);
+  border-bottom: 3px solid var(--gold);
+}
+.deco { display: flex; gap: 10px; margin-bottom: 8px; color: var(--gold); }
+.deco svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.deco svg:nth-child(2) { width: 18px; height: 18px; margin-top: 6px; }
+.ready .deco { justify-content: center; }
+.top-in { max-width: 1120px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.brand { font-weight: 700; font-size: 1.05rem; margin-right: auto; display: flex; align-items: center; }
+.logo { height: 48px; width: auto; max-width: 100%; display: block; }
+.tools { display: flex; gap: 8px; }
+.steps { list-style: none; display: flex; gap: 6px; margin: 0; padding: 0; order: 2; flex: 1 1 360px; }
+.steps li { flex: 1; }
+.step-btn {
+  width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 8px 10px; border: 1px solid var(--hdr-line); border-radius: 999px;
+  background: transparent; color: var(--hdr-text2); font: inherit; font-weight: 600; font-size: .9rem; cursor: pointer;
+}
+.step-btn .num { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--hdr-num); color: var(--hdr-text); font-size: .8rem; }
+.step-btn[aria-current="step"] { background: var(--hdr-on); border-color: var(--hdr-on); color: var(--hdr-on-text); }
+.step-btn[aria-current="step"] .num { background: var(--hdr-on-text); color: var(--hdr-on); }
+header.top .icon-btn { background: transparent; color: var(--hdr-text); border-color: var(--hdr-line); }
+header.top :focus-visible { outline-color: #FFFFFF; }
+header.top .icon-btn:hover, header.top .step-btn:hover { border-color: #FFFFFF; }
+
+.icon-btn {
+  width: 44px; height: 44px; display: inline-grid; place-items: center;
+  border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--text); cursor: pointer;
+}
+.icon-btn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.icon-btn:hover, .step-btn:hover { border-color: var(--accent); }
+
+/* Layout */
+main { max-width: 1120px; margin: 0 auto; padding: 28px 16px 8px; }
+.screen { animation: rise .45s ease both; }
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.lead { font-size: 1.15rem; max-width: 62ch; color: var(--text2); }
+.demo-note { background: var(--demo-bg); color: var(--demo-text); border: 1px solid var(--demo-line); border-radius: 12px; padding: 12px 16px; margin: 0 0 20px; font-weight: 500; }
+.badge { display: inline-block; background: var(--demo-text); color: var(--demo-bg); border-radius: 6px; padding: 1px 8px; font-size: .8rem; font-weight: 700; margin-right: 8px; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; }
+.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); margin: 20px 0 28px; }
+.sub-card { display: grid; grid-template-rows: subgrid; grid-row: span 2; row-gap: 6px; }
+.sub-card h3, .sub-card p { margin: 0; }
+.stagger > * { animation: rise .5s ease both; animation-delay: calc(var(--i, 0) * 90ms); }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px;
+  padding: 10px 22px; border-radius: 12px; border: 1px solid var(--accent);
+  background: var(--accent); color: var(--on-accent); font: inherit; font-weight: 700; cursor: pointer;
+}
+.btn.secondary { background: transparent; color: var(--accent); }
+.btn:hover { filter: brightness(1.06); }
+.btn[disabled] { opacity: .55; cursor: not-allowed; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+
+/* Question + collect screen */
+.statement { font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 800; line-height: 1.2; margin-bottom: 8px; }
+.qbox { background: var(--accent-soft); border-radius: var(--radius); padding: 18px 22px; margin: 8px 0 28px; border-left: 6px solid var(--gold); }
+.qlabel { font-size: .85rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text2); }
+.qtext { font-size: clamp(1.5rem, 3.6vw, 2.2rem); font-weight: 800; line-height: 1.2; color: var(--text); }
+.qtext-small { font-weight: 600; margin-bottom: 8px; }
+.addbox { margin: 16px 0 24px; display: grid; gap: 8px; }
+.field { font-weight: 700; }
+.addrow { display: flex; gap: 12px; flex-wrap: wrap; }
+.inp { flex: 1 1 260px; min-height: 52px; padding: 10px 14px; font: inherit; font-size: 1.1rem; border-radius: 12px; border: 2px solid var(--line); background: var(--surface); color: var(--text); }
+.hint { font-size: .9rem; color: var(--text2); }
+.total { font-weight: 600; color: var(--text2); min-height: 1.5em; margin: 0 0 8px; }
+.chips { list-style: none; padding: 0; margin: 0 0 16px; display: flex; flex-wrap: wrap; gap: 10px; }
+.chip { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px 6px 4px 16px; max-width: 100%; }
+.chip .cw { font-weight: 700; overflow-wrap: anywhere; }
+.chip .cn { background: var(--accent-soft); color: var(--text); border-radius: 99px; padding: 0 10px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.mini { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--text); font: inherit; font-size: 1.2rem; font-weight: 700; cursor: pointer; }
+.mini:hover { border-color: var(--accent); }
+.cloudcard { padding: 28px 20px; }
+.cloud { font-size: 1rem; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .3em 1.1em; min-height: 280px; align-content: center; line-height: 1.1; }
+.cloud .w { font-weight: 800; overflow-wrap: anywhere; text-align: center; animation: pop .6s ease both; }
+.cloud .c0 { color: var(--w0); } .cloud .c1 { color: var(--w1); } .cloud .c2 { color: var(--w2); } .cloud .c3 { color: var(--w3); }
+@keyframes pop { from { opacity: 0; transform: scale(.85); } to { opacity: 1; transform: none; } }
+/* Moderator view: input on the left, live cloud on the right */
+.modtag { display: inline-block; background: var(--accent-soft); color: var(--text); border: 1px solid var(--gold); border-radius: 6px; padding: 0 8px; font-size: .85rem; font-weight: 700; }
+.collect-grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); align-items: start; margin-bottom: 8px; }
+.collect-right { position: sticky; top: 96px; }
+.collect-right h2, .collect-left h2 { margin-top: 0; }
+.livecard { padding: 12px; }
+.livecloud { min-height: 300px; }
+.live-empty { margin: 0; text-align: center; font-size: 1.05rem; }
+.aud { display: grid; gap: 6px; margin-top: 14px; justify-items: start; }
+.aud .hint { margin: 0; }
+.cloud.livecloud .w { animation: none; position: relative; }
+.cloud.livecloud .w.fly { animation: fly .9s cubic-bezier(.2,.8,.2,1) both; }
+.cloud.livecloud .w.bump { animation: bump .6s ease both; }
+@keyframes fly {
+  0% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(.4) rotate(-8deg); }
+  60% { opacity: 1; transform: translate(0, 0) scale(1.15) rotate(0); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes bump { 0% { transform: scale(1); } 40% { transform: scale(1.22); } 100% { transform: scale(1); } }
+.star { position: absolute; top: -.55em; right: -.7em; width: .9em; height: .9em; color: var(--gold); pointer-events: none; animation: starpop 1.6s ease-out both; animation-delay: .35s; opacity: 0; }
+.star svg { width: 100%; height: 100%; fill: currentColor; stroke: none; filter: drop-shadow(0 0 4px rgba(217,174,60,.7)); }
+@keyframes starpop {
+  0% { opacity: 0; transform: scale(0) rotate(-40deg); }
+  22% { opacity: 1; transform: scale(1.5) rotate(10deg); }
+  45% { opacity: 1; transform: scale(1) rotate(0); }
+  100% { opacity: 0; transform: translateY(-.5em) scale(.8); }
+}
+/* Audience window: cloud only, big */
+body.audience { padding-bottom: 24px; }
+.audience main { max-width: 1400px; }
+.audience .audience-q { text-align: center; font-size: clamp(1.8rem, 5vw, 3.2rem); margin-bottom: 20px; }
+.audience .deco { justify-content: center; }
+.audience .cloudcard { padding: 28px; }
+.audience .cloud { font-size: 1.6rem; min-height: 58vh; }
+.audience .demo-note { text-align: center; }
+.toplist { margin: 8px 0 0; padding-left: 1.3em; font-size: 1.15rem; }
+.toplist li { margin-bottom: .4em; }
+
+/* Ready + results */
+.ready { text-align: center; padding: 40px 16px; max-width: 640px; margin: 0 auto; }
+.ready .btn { min-height: 60px; font-size: 1.2rem; padding: 14px 36px; }
+.result-list { display: grid; gap: 16px; margin: 20px 0 28px; }
+.res h3 { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.res .avg { font-size: 2rem; font-weight: 800; color: var(--accent); font-variant-numeric: tabular-nums; }
+.bar { height: 22px; border-radius: 99px; background: var(--track); overflow: hidden; margin: 10px 0; }
+.bar > span { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 99px; transition: width 1.1s cubic-bezier(.2,.7,.2,1); }
+.axis { display: flex; justify-content: space-between; font-size: .85rem; color: var(--text2); }
+.dist { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; font-size: .85rem; color: var(--text2); text-align: center; }
+.dist b { display: block; font-size: 1.15rem; color: var(--text); }
+.pair { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin: 20px 0; }
+.pair .tag { font-size: .85rem; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: .04em; }
+.prompts { padding-left: 1.2em; }
+.prompts li { margin-bottom: .6em; }
+.disclaimer { border-left: 4px solid var(--accent); padding: 8px 16px; background: var(--surface2); border-radius: 0 12px 12px 0; margin: 20px 0; }
+
+/* Footer */
+footer.bottom { position: fixed; left: 0; right: 0; bottom: 0; z-index: 15; background: var(--surface); border-top: 1px solid var(--line); }
+.foot-in { max-width: 1120px; margin: 0 auto; padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: .85rem; color: var(--text2); }
+
+/* Settings dialog */
+dialog { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); color: var(--text); padding: 0; width: min(520px, calc(100vw - 32px)); box-shadow: var(--shadow); }
+dialog::backdrop { background: rgba(5, 15, 28, .6); }
+.dlg { padding: 20px; display: grid; gap: 16px; max-height: 85vh; overflow: auto; }
+.dlg-head { display: flex; justify-content: space-between; align-items: center; }
+.dlg-head h2 { margin: 0; }
+.field { display: grid; gap: 6px; font-weight: 600; }
+.field select { font: inherit; padding: 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--text); min-height: 44px; }
+.check { display: flex; align-items: center; gap: 12px; font-weight: 600; min-height: 44px; }
+.check input { width: 22px; height: 22px; accent-color: var(--accent); }
+.keys { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 0; }
+.keys dt { font-weight: 700; }
+.keys dd { margin: 0; color: var(--text2); }
+kbd { font-family: inherit; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 6px; padding: 0 7px; background: var(--surface2); color: var(--text); }
+
+#print { display: none; }
+
+@media (max-width: 960px) {
+  .collect-grid { grid-template-columns: minmax(0, 1fr); }
+  .collect-right { position: static; order: -1; }
+}
+@media (max-width: 720px) {
+  .logo { height: 36px; }
+  .audience .cloud { font-size: 1rem; }
+  .cloud { font-size: .72rem; min-height: 220px; }
+  .step-btn .lbl { display: none; }
+  .steps { flex-basis: 100%; }
+  .foot-in { font-size: .8rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  .star { display: none; }
+}
+@media print {
+  body { background: #fff; background-image: none; color: #000; padding: 0; font-size: 11pt; }
+  header.top, footer.bottom, main, dialog, .skip { display: none !important; }
+  #print { display: block; }
+  #print h1 { font-size: 20pt; }
+  #print table { width: 100%; border-collapse: collapse; margin: 12pt 0; }
+  #print th, #print td { border: 1px solid #555; padding: 6pt 8pt; text-align: left; vertical-align: top; }
+  #print { background: #fff; }
+  #print .pq { font-size: 15pt; font-weight: 700; }
+  #print .cloud { min-height: 0; margin: 14pt 0; }
+  #print .cloud .w, #print .cloud .w.c0, #print .cloud .w.c1, #print .cloud .w.c2, #print .cloud .w.c3 { color: #000; animation: none; }
+  #print .demo-note { background: #fff; color: #000; border: 1px solid #000; }
+  #print .disclaimer { background: #fff; border-left: 3px solid #000; color: #000; }
+}
+
+/* ===== v1.4: participant + moderator pages ===== */
+.pmain { max-width: 680px; }
+.msg { min-height: 1.6em; margin: 0 0 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.msg.err { color: var(--w3); }
+.msg.ok { color: var(--text); }
+.msg.info { color: var(--text2); }
+.thanks-star { width: 1.4em; height: 1.4em; color: var(--gold); animation: starpop 1.6s ease-out both; flex: none; }
+.thanks-star svg { width: 100%; height: 100%; fill: currentColor; stroke: none; }
+.hint.err { color: var(--w3); font-weight: 600; }
+.qbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-bottom: 12px; }
+.qh { margin: 0; font-size: clamp(1.4rem, 3vw, 2.2rem); }
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 16px; }
+.toolbar .btn { min-height: 44px; padding: 8px 16px; font-size: .95rem; }
+.toolbar .btn[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
+.chipstatus { border-radius: 99px; padding: 6px 14px; font-weight: 700; font-size: .9rem; border: 1px solid var(--line); }
+.chipstatus.good { background: var(--accent-soft); color: var(--text); }
+.chipstatus.warn { background: var(--demo-bg); color: var(--demo-text); border-color: var(--demo-line); }
+.closed-note { background: var(--demo-bg); color: var(--demo-text); border: 1px solid var(--demo-line); border-radius: 12px; padding: 10px 16px; font-weight: 600; }
+.modscreen { max-width: none; }
+.modgrid { display: grid; gap: 24px; grid-template-columns: minmax(0, 2.2fr) minmax(260px, 1fr); align-items: start; }
+.modgrid.cloud-only { grid-template-columns: minmax(0, 1fr); }
+.modgrid.cloud-only .modpanel { display: none; }
+.modcloud .livecloud { min-height: 56vh; font-size: 1.25rem; }
+.joinbar { margin-bottom: 16px; }
+.joinurl { font-size: 1.15rem; font-weight: 800; overflow-wrap: anywhere; color: var(--accent); }
+.modpanel h2 { margin-top: 0; }
+.modpanel .chips { max-height: 40vh; overflow: auto; }
+.chip .mini { flex: none; }
+@media (max-width: 960px) { .modgrid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 720px) { .modcloud .livecloud { font-size: .8rem; min-height: 40vh; } }
+@media print { #print .cloud { font-size: 1rem; } }
+
+</style>
+</head>
+<body>
+<script>
+var LOGO_SRC = "data:image/png;base64,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";
+var CONFIG = { server: "" };
+/* content.js - all texts and data. Format: {key: [DE]} (one entry per language). */
+var APP = { name: "Invent ♥ Dataport Community", version: "1.4" };
+var LANGS = ["DE"];
+var QUESTION = ["Was ist dein Highlight 2026?"];
+var LIMITS = { wordLen: 40, maxWords: 150, maxCount: 99, maxSent: 5 };
+
+var STR = {
+  appName: ["Invent ♥ Dataport Community"],
+  logoAlt: ["Capgemini Invent, Herz, Dataport"],
+  themeToggle: ["Farbschema wechseln"],
+  demoBadge: ["Demo"],
+  copyright: ["© Invent ♥ Dataport Community"],
+  privacy: ["Datenschutz: Die Wörter gehen nur an den Server, der für diese Runde eingerichtet ist."],
+
+  /* Participant page */
+  pLead: ["Tippe ein Wort oder einen kurzen Satz. Dein Highlight erscheint gleich in der gemeinsamen Wortwolke."],
+  pLabel: ["Mein Highlight"],
+  pHint: ["Höchstens {n} Zeichen. Bitte keine Namen und nichts Vertrauliches."],
+  pSend: ["Senden"],
+  pThanks: ["Danke! Dein Highlight ist angekommen."],
+  pMore: ["Du kannst noch ein weiteres senden."],
+  pLimit: ["Du hast {n} Highlights gesendet. Mehr geht auf diesem Gerät nicht. Danke!"],
+  pEmpty: ["Bitte tippe zuerst ein Wort."],
+  pErr: ["Das Senden hat nicht geklappt. Prüfe deine Verbindung und versuche es noch einmal."],
+  pClosed: ["Die Runde ist beendet. Danke fürs Mitmachen!"],
+  pRate: ["Bitte warte einen Moment und sende dann noch einmal."],
+  pNoServer: ["Diese Seite ist mit keinem Server verbunden. Öffne den Link, den dir die Moderation gegeben hat."],
+  pPrivacy: ["Datenschutz: Dein Highlight geht an die Moderation und wird für alle sichtbar in der Wortwolke gezeigt. Es bleibt auf dem Server, bis die Moderation die Runde neu startet."],
+
+  /* Moderator page */
+  mTag: ["Moderator-Ansicht"],
+  demoNote: ["Demo-Modus: Die Wörter sind Beispiele. Echte Antworten werden angezeigt, sobald du den Demo-Modus ausschaltest."],
+  connectTitle: ["Mit dem Server verbinden"],
+  connectHelp: ["Gib die PIN ein, die der Server beim Start angezeigt hat."],
+  pinLabel: ["PIN der Moderation"],
+  connectBtn: ["Verbinden"],
+  pinWrong: ["Die PIN stimmt nicht."],
+  noServerMod: ["Diese Seite ist mit keinem Server verbunden. Öffne sie über den Link, den der Server anzeigt."],
+  connErr: ["Der Server antwortet nicht. Prüfe, ob er läuft."],
+  statusOk: ["Verbunden"],
+  statusLost: ["Verbindung unterbrochen. Ich versuche es weiter."],
+  joinTitle: ["Teilnehmende öffnen diesen Link"],
+  summaryCount: ["{n} Antworten, {m} verschiedene Wörter"],
+  summaryOne: ["1 Antwort, 1 Wort"],
+  emptyCloud: ["Hier erscheinen gleich die Highlights."],
+  cloudAria: ["Wortwolke mit {m} Wörtern aus {n} Antworten"],
+  listTitle: ["Alle Wörter"],
+  removeAria: ["Wort entfernen: {w}"],
+  removeConfirm: ["Dieses Wort für alle entfernen?"],
+  countOf: ["{w}, {n} Mal genannt"],
+  addLabel: ["Selbst ein Wort hinzufügen"],
+  addBtn: ["Hinzufügen"],
+  closeInput: ["Eingabe schließen"],
+  openInput: ["Eingabe öffnen"],
+  closedNote: ["Die Eingabe ist geschlossen. Teilnehmende können nichts mehr senden."],
+  startOver: ["Neu starten"],
+  startOverConfirm: ["Alle Wörter auf dem Server löschen und neu beginnen?"],
+  onlyCloud: ["Nur Wolke"],
+  showPanel: ["Liste zeigen"],
+  fullscreen: ["Vollbild"],
+  present: ["Große Schrift"],
+  demoToggle: ["Demo"],
+  print: ["Drucken oder als PDF sichern"],
+  disclaimer: ["Hinweis: Die Wortwolke zeigt, was in dieser Runde genannt wurde. Sie ist eine schnelle Orientierung für das Gespräch. Sie ist keine Umfrage, kein Audit und kein Angebot."],
+  printTitle: ["Wortwolke der Community"],
+  demoPrint: ["Demo-Inhalt: Beispielwörter, keine echten Antworten der Gruppe."],
+  thWord: ["Wort"], thCount: ["Genannt"],
+  shortcuts: ["Tasten: P = große Schrift, F = Vollbild, L = Liste ein/aus, D = Demo, T = Farbschema"]
+};
+
+/* Example words for demo mode only. Clearly labelled as demo on screen. [word, count] */
+var DEMO_WORDS = [
+  ["Zusammenarbeit", 6], ["Austausch", 5], ["Gemeinsame Workshops", 4], ["Neue Ideen", 3],
+  ["Lernen", 3], ["Offenheit", 2], ["Neue Kontakte", 2], ["Mut", 1], ["Spaß", 1], ["Vertrauen", 1]
+];
+
+</script>
+<script>
+/* common.js - shared helpers for the participant and the moderator page. */
+var WD = (function () {
+  'use strict';
+  var LANG = 0, THEME_KEY = 'wd_theme';
+
+  function t(k, vars) {
+    var v = STR[k]; var s = v ? (v[LANG] !== undefined ? v[LANG] : v[0]) : k;
+    if (vars) for (var p in vars) s = s.split('{' + p + '}').join(String(vars[p]));
+    return s;
+  }
+  function tx(a) { return a[LANG] !== undefined ? a[LANG] : a[0]; }
+  /* All DOM is built with textContent, so user text is never interpreted as HTML. */
+  function h(tag, props, kids) {
+    var e = document.createElement(tag);
+    if (props) for (var k in props) {
+      var v = props[k];
+      if (v == null || v === false) continue;
+      if (k === 'class') e.className = v;
+      else if (k === 'text') e.textContent = v;
+      else if (k.slice(0, 2) === 'on') e.addEventListener(k.slice(2), v);
+      else e.setAttribute(k, v === true ? '' : v);
+    }
+    (kids || []).forEach(function (c) { if (c != null) e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); });
+    return e;
+  }
+  function $(id) { return document.getElementById(id); }
+  function reduced() { return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }
+  function svg(path) {
+    var s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('aria-hidden', 'true');
+    path.forEach(function (d) { var p = document.createElementNS('http://www.w3.org/2000/svg', 'path'); p.setAttribute('d', d); s.appendChild(p); });
+    return s;
+  }
+  var ICON = {
+    flake: ['M12 2v20', 'M4 7l16 10', 'M4 17L20 7', 'M9.5 3.8L12 6l2.5-2.2', 'M9.5 20.2L12 18l2.5 2.2'],
+    star: ['M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.2 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z'],
+    theme: ['M12 3a9 9 0 100 18 9 9 0 000-18z', 'M12 3v18']
+  };
+  /* Decoration only: three snowflakes, hidden from screen readers. */
+  function deco() { return h('div', { class: 'deco', 'aria-hidden': 'true' }, [svg(ICON.flake), svg(ICON.flake), svg(ICON.flake)]); }
+
+  /* ---------- words ---------- */
+  function cleanWord(s) {
+    return String(s == null ? '' : s).replace(/[\u0000-\u001F\u007F<>]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, LIMITS.wordLen).trim();
+  }
+  function keyOf(s) { return s.toLowerCase(); }
+  /* Adds one entry (merges equal words, ignoring upper/lower case). Returns the list. */
+  function addTo(list, raw, n) {
+    var w = cleanWord(raw); if (!w) return list;
+    n = Math.max(1, Math.min(LIMITS.maxCount, Math.floor(Number(n)) || 1));
+    var k = keyOf(w);
+    for (var i = 0; i < list.length; i++) if (keyOf(list[i].w) === k) { list[i].n = Math.min(LIMITS.maxCount, list[i].n + n); return list; }
+    if (list.length < LIMITS.maxWords) list.push({ w: w, n: n });
+    return list;
+  }
+  function sanitizeWords(arr) {
+    var out = [];
+    if (!Array.isArray(arr)) return out;
+    arr.forEach(function (x) { if (x && typeof x === 'object') addTo(out, x.w, x.n); });
+    return out;
+  }
+  function totalN(list) { return list.reduce(function (a, b) { return a + b.n; }, 0); }
+  function sortedWords(list) { return list.slice().sort(function (a, b) { return b.n - a.n || a.w.localeCompare(b.w, 'de'); }); }
+  /* Font size in em: equal counts give one size, otherwise 1.15 to 3.4. */
+  function sizeFor(n, max) { return max <= 1 ? 1.9 : 1.15 + 2.25 * Math.sqrt((n - 1) / (max - 1)); }
+  function hashOf(s) { var x = 5381; for (var i = 0; i < s.length; i++) x = ((x << 5) + x + s.charCodeAt(i)) | 0; return Math.abs(x); }
+  /* Mixes words in a fixed order so big words are spread out, and the same input always looks the same. */
+  function cloudOrder(list) { return list.slice().sort(function (a, b) { return hashOf(keyOf(a.w)) - hashOf(keyOf(b.w)); }); }
+  /* Compares the old and new list. New words fly in, words with a higher count bump. */
+  function diffHits(oldList, newList) {
+    var old = {}; oldList.forEach(function (x) { old[keyOf(x.w)] = x.n; });
+    var hits = [];
+    newList.forEach(function (x) {
+      var k = keyOf(x.w);
+      if (!(k in old)) hits.push({ k: k, isNew: true }); else if (x.n > old[k]) hits.push({ k: k, isNew: false });
+    });
+    return hits.slice(0, 12);
+  }
+
+  /* Fills a cloud. Words in `hits` animate: new words fly in, repeated words bump, and a star pops up. */
+  function fillCloud(cloud, list, hits) {
+    cloud.textContent = '';
+    cloud.setAttribute('aria-label', t('cloudAria', { m: list.length, n: totalN(list) }));
+    if (!list.length) { cloud.appendChild(h('p', { class: 'muted live-empty', text: t('emptyCloud') })); return; }
+    var map = {}; (hits || []).forEach(function (x) { map[x.k] = x.isNew ? 'fly' : 'bump'; });
+    var max = list.reduce(function (a, b) { return Math.max(a, b.n); }, 1);
+    var DIRS = [[-90, 10], [90, 10], [0, 70], [0, -70]];
+    cloudOrder(list).forEach(function (x) {
+      var k = keyOf(x.w), hs = hashOf(k);
+      var w = h('span', { class: 'w c' + (hs % 4) + (map[k] ? ' ' + map[k] : ''), 'aria-hidden': 'true' }, [x.w]);
+      w.style.fontSize = sizeFor(x.n, max).toFixed(2) + 'em';
+      if (map[k]) {
+        var d = DIRS[hs % 4]; w.style.setProperty('--dx', d[0] + 'px'); w.style.setProperty('--dy', d[1] + 'px');
+        if (!reduced()) {
+          var star = h('span', { class: 'star', 'aria-hidden': 'true' }, [svg(ICON.star)]);
+          w.appendChild(star);
+          var rm = function () { if (star.parentNode) star.parentNode.removeChild(star); };
+          star.addEventListener('animationend', rm); setTimeout(rm, 2200);
+        }
+      }
+      cloud.appendChild(w);
+    });
+  }
+
+  /* ---------- theme ---------- */
+  function applyTheme(v) {
+    var r = document.documentElement;
+    if (v === 'light' || v === 'dark') r.setAttribute('data-theme', v); else r.removeAttribute('data-theme');
+    try { if (v === 'light' || v === 'dark') localStorage.setItem(THEME_KEY, v); else localStorage.removeItem(THEME_KEY); } catch (e) { }
+  }
+  function currentTheme() { var a = document.documentElement.getAttribute('data-theme'); return a === 'light' || a === 'dark' ? a : 'auto'; }
+  function isDark() {
+    var a = currentTheme();
+    return a === 'dark' || (a === 'auto' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  }
+  function initTheme() {
+    try { var th = localStorage.getItem(THEME_KEY); if (th === 'light' || th === 'dark') applyTheme(th); } catch (e) { }
+  }
+  function toggleTheme() { applyTheme(isDark() ? 'light' : 'dark'); }
+
+  /* ---------- page frame ---------- */
+  function logoEl() {
+    return typeof LOGO_SRC === 'string' && LOGO_SRC
+      ? h('div', { class: 'brand' }, [h('img', { class: 'logo', src: LOGO_SRC, alt: t('logoAlt') })])
+      : h('div', { class: 'brand', text: t('appName') });
+  }
+  function themeBtn() {
+    return h('button', { class: 'icon-btn', type: 'button', 'aria-label': t('themeToggle'), onclick: toggleTheme }, [svg(ICON.theme)]);
+  }
+  function footer() {
+    return h('footer', { class: 'bottom' }, [h('div', { class: 'foot-in' }, [
+      h('span', { text: t('copyright') }), h('span', { text: 'v' + APP.version })].concat(arguments.length ? [h('span', { text: arguments[0] })] : []))]);
+  }
+  function syncFooter() {
+    var f = document.querySelector('footer.bottom');
+    if (f) document.documentElement.style.setProperty('--footer-h', f.offsetHeight + 'px');
+  }
+  function serverBase() { return (typeof CONFIG !== 'undefined' && CONFIG.server ? String(CONFIG.server).replace(/\/+$/, '') : ''); }
+
+  /* ---------- shared self test ---------- */
+  function selfTest(extra) {
+    var res = [], fails = 0;
+    function ok(name, cond) { res.push((cond ? 'PASS ' : 'FAIL ') + name); if (!cond) fails++; }
+    var l = [];
+    addTo(l, 'Austausch'); addTo(l, '  austausch '); addTo(l, 'Mut'); addTo(l, '');
+    ok('equal words merge ignoring case and spaces', l.length === 2 && l[0].n === 2 && l[0].w === 'Austausch');
+    ok('empty input is ignored', addTo([], '   ').length === 0 && addTo([], null).length === 0);
+    ok('long input is cut to the limit', cleanWord(new Array(200).join('a')).length === LIMITS.wordLen);
+    ok('angle brackets and control characters are removed', cleanWord('<b>Hi\u0007</b>').indexOf('<') === -1 && cleanWord('a\u0000b') === 'a b');
+    ok('single word gets one fixed size', sizeFor(1, 1) === sizeFor(5, 1));
+    ok('size grows with count and stays in range', sizeFor(1, 9) === 1.15 && Math.abs(sizeFor(9, 9) - 3.4) < 1e-9 && sizeFor(4, 9) > sizeFor(2, 9));
+    var okRand = true;
+    for (var n = 0; n < 500; n++) {
+      var list = [], steps = Math.floor(Math.random() * 40), pool = ['Ja', 'ja', 'Nein', 'Mut', 'Idee', 'x y', 'X Y', ''];
+      for (var i = 0; i < steps; i++) addTo(list, pool[Math.floor(Math.random() * pool.length)], 1);
+      var max = list.reduce(function (a, b) { return Math.max(a, b.n); }, 1), keys = {}, dup = false;
+      list.forEach(function (x) { if (keys[keyOf(x.w)]) dup = true; keys[keyOf(x.w)] = 1; var s = sizeFor(x.n, max); if (s < 1.15 - 1e-9 || s > 3.4 + 1e-9) okRand = false; });
+      if (dup) okRand = false;
+    }
+    ok('500 random runs: no duplicates, sizes in range', okRand);
+    var bad = sanitizeWords([{ w: '<img src=x>', n: 1e9 }, { w: 5, n: -2 }, null, 'x', { n: 3 }]);
+    ok('tampered list is sanitised', bad.length === 2 && bad[0].n === LIMITS.maxCount && bad[0].w.indexOf('<') === -1);
+    ok('garbage input gives empty list', sanitizeWords('junk').length === 0 && sanitizeWords(undefined).length === 0);
+    var many = []; for (var j = 0; j < LIMITS.maxWords + 20; j++) addTo(many, 'w' + j);
+    ok('word list is capped', many.length === LIMITS.maxWords);
+    var dh = diffHits([{ w: 'A', n: 1 }, { w: 'B', n: 2 }], [{ w: 'a', n: 2 }, { w: 'B', n: 2 }, { w: 'C', n: 1 }]);
+    ok('diff finds new and increased words', dh.length === 2 && dh.some(function (x) { return x.k === 'a' && !x.isNew; }) && dh.some(function (x) { return x.k === 'c' && x.isNew; }));
+    ok('diff of equal lists is empty', diffHits([{ w: 'A', n: 1 }], [{ w: 'A', n: 1 }]).length === 0);
+    var txt = true; for (var key in STR) { if (!STR[key] || typeof STR[key][0] !== 'string') txt = false; }
+    ok('all strings defined', txt);
+    if (extra) extra(ok);
+    var out = (fails ? 'SELFTEST FAILED: ' + fails : 'SELFTEST OK: ' + res.length + ' checks') + '\n' + res.join('\n');
+    if (window.console) console.log(out);
+    return { failed: fails, results: res };
+  }
+
+  return {
+    t: t, tx: tx, h: h, $: $, svg: svg, ICON: ICON, deco: deco, reduced: reduced,
+    cleanWord: cleanWord, keyOf: keyOf, addTo: addTo, sanitizeWords: sanitizeWords, totalN: totalN, sortedWords: sortedWords,
+    sizeFor: sizeFor, hashOf: hashOf, cloudOrder: cloudOrder, diffHits: diffHits, fillCloud: fillCloud,
+    applyTheme: applyTheme, initTheme: initTheme, toggleTheme: toggleTheme, isDark: isDark, currentTheme: currentTheme,
+    logoEl: logoEl, themeBtn: themeBtn, footer: footer, syncFooter: syncFooter, serverBase: serverBase, selfTest: selfTest
+  };
+})();
+
+</script>
+<script>
+/* moderator.js - the page for the moderator: live cloud, controls, word list. */
+(function () {
+  'use strict';
+  var t = WD.t, h = WD.h, $ = WD.$;
+  var api = WD.serverBase();
+  var POLL_MS = 1500;
+  var pin = '';
+  var S = { words: [], real: [], demo: false, rev: -1, open: true, presenter: false, panel: true, connected: false };
+  var timer = null, failCount = 0;
+
+  function noServer() { return !api && location.protocol === 'file:'; }
+  function url(path, params) {
+    var q = []; for (var k in params) q.push(k + '=' + encodeURIComponent(params[k]));
+    return api + path + (q.length ? '?' + q.join('&') : '');
+  }
+  function shown() { return S.demo ? WD.sanitizeWords(DEMO_WORDS.map(function (d) { return { w: d[0], n: d[1] }; })) : S.words; }
+
+  /* ---------- server calls ---------- */
+  function post(path, params, body) {
+    return fetch(url(path, params), { method: 'POST', body: body == null ? '' : body, cache: 'no-store' });
+  }
+  function applyServer(j) {
+    var old = S.words;
+    S.open = j.open !== false;
+    if (j.words) {
+      S.words = WD.sanitizeWords(j.words);
+      if (!S.demo) render(WD.diffHits(old, S.words)); else renderLists();
+    }
+    if (typeof j.rev === 'number') S.rev = j.rev;
+    renderControls();
+  }
+  function poll() {
+    clearTimeout(timer);
+    fetch(url('/api/words', { pin: pin, rev: S.rev }), { cache: 'no-store' })
+      .then(function (r) {
+        if (r.status === 401) { stop(); showConnect('pinWrong'); return null; }
+        if (!r.ok) throw new Error('http');
+        return r.json();
+      })
+      .then(function (j) {
+        if (!j) return;
+        failCount = 0; setStatus(true);
+        applyServer(j);
+        timer = setTimeout(poll, POLL_MS);
+      })
+      .catch(function () { failCount++; setStatus(false); timer = setTimeout(poll, POLL_MS * 2); });
+  }
+  function stop() { clearTimeout(timer); S.connected = false; }
+  function setStatus(ok) {
+    S.connected = ok;
+    var el = $('status'); if (!el) return;
+    el.textContent = ok ? t('statusOk') : t('statusLost');
+    el.className = 'chipstatus ' + (ok ? 'good' : 'warn');
+  }
+
+  function connect() {
+    pin = $('pinInput').value.trim();
+    if (noServer()) { $('connMsg').textContent = t('noServerMod'); return; }
+    if (!pin) return;
+    $('connMsg').textContent = '';
+    fetch(url('/api/words', { pin: pin, rev: -1 }), { cache: 'no-store' })
+      .then(function (r) {
+        if (r.status === 401) { $('connMsg').textContent = t('pinWrong'); return null; }
+        if (!r.ok) throw new Error('http');
+        return r.json();
+      })
+      .then(function (j) {
+        if (!j) return;
+        S.rev = -1; showMain(); applyServer(j); setStatus(true); timer = setTimeout(poll, POLL_MS);
+      })
+      .catch(function () { $('connMsg').textContent = t('connErr'); });
+  }
+
+  function addOwn() {
+    var inp = $('ownInput'), w = WD.cleanWord(inp.value); if (!w) return;
+    post('/api/words', {}, JSON.stringify({ w: w })).then(function () { inp.value = ''; poll(); }).catch(function () { });
+    inp.focus();
+  }
+  function removeWord(w) {
+    if (!window.confirm(t('removeConfirm') + '\n' + w)) return;
+    post('/api/remove', { pin: pin, k: WD.keyOf(w) }).then(function () { poll(); }).catch(function () { });
+  }
+  function toggleOpen() { post('/api/open', { pin: pin, v: S.open ? 0 : 1 }).then(function () { poll(); }).catch(function () { }); }
+  function startOver() {
+    if (!window.confirm(t('startOverConfirm'))) return;
+    post('/api/reset', { pin: pin }).then(function () { S.real = []; poll(); }).catch(function () { });
+  }
+
+  /* ---------- rendering ---------- */
+  function renderLists() {
+    var list = shown();
+    var cloud = $('liveCloud'); if (cloud) WD.fillCloud(cloud, list, []);
+    renderPanel(list);
+  }
+  function render(hits) {
+    var list = shown();
+    var cloud = $('liveCloud'); if (cloud) WD.fillCloud(cloud, list, hits || []);
+    renderPanel(list);
+  }
+  function renderPanel(list) {
+    var box = $('wordList'); if (!box) return;
+    box.textContent = '';
+    WD.sortedWords(list).forEach(function (x) {
+      box.appendChild(h('li', { class: 'chip' }, [
+        h('span', { class: 'cw', text: x.w }),
+        h('span', { class: 'cn', text: String(x.n), role: 'img', 'aria-label': t('countOf', { w: x.w, n: x.n }) }),
+        S.demo ? null : h('button', { class: 'mini', type: 'button', 'aria-label': t('removeAria', { w: x.w }), text: '×', onclick: function () { removeWord(x.w); } })
+      ]));
+    });
+    var n = WD.totalN(list), m = list.length, s = $('summary');
+    if (s) s.textContent = !m ? '' : (n === 1 ? t('summaryOne') : t('summaryCount', { n: n, m: m }));
+  }
+  function renderControls() {
+    var b = $('openBtn'); if (b) b.textContent = S.open ? t('closeInput') : t('openInput');
+    var c = $('closedNote'); if (c) c.hidden = S.open;
+    var d = $('demoBox'); if (d) d.hidden = !S.demo;
+    var dbtn = $('demoBtn'); if (dbtn) dbtn.setAttribute('aria-pressed', S.demo ? 'true' : 'false');
+    var pbtn = $('presBtn'); if (pbtn) pbtn.setAttribute('aria-pressed', S.presenter ? 'true' : 'false');
+    var lbtn = $('panelBtn'); if (lbtn) { lbtn.textContent = S.panel ? t('onlyCloud') : t('showPanel'); lbtn.setAttribute('aria-pressed', S.panel ? 'false' : 'true'); }
+    document.body.classList.toggle('presenter', S.presenter);
+    var g = $('modGrid'); if (g) g.classList.toggle('cloud-only', !S.panel);
+    setTimeout(WD.syncFooter, 0);
+  }
+  function setDemo(on) { S.demo = on; render([]); renderControls(); }
+  function togglePresenter() { S.presenter = !S.presenter; renderControls(); }
+  function togglePanel() { S.panel = !S.panel; renderControls(); }
+  function fullscreen() {
+    try { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); } catch (e) { }
+  }
+
+  function showConnect(errKey) {
+    var main = $('main'); main.textContent = '';
+    var pinInput = h('input', { id: 'pinInput', class: 'inp', type: 'password', inputmode: 'numeric', autocomplete: 'off', 'aria-describedby': 'connMsg',
+      onkeydown: function (e) { if (e.key === 'Enter') { e.preventDefault(); connect(); } } });
+    main.appendChild(h('section', { class: 'screen' }, [
+      WD.deco(),
+      h('p', { class: 'muted' }, [h('span', { class: 'modtag', text: t('mTag') })]),
+      h('h1', { tabindex: '-1', text: t('connectTitle') }),
+      h('p', { class: 'lead', text: t('connectHelp') }),
+      h('div', { class: 'card addbox' }, [
+        h('label', { class: 'field', for: 'pinInput', text: t('pinLabel') }),
+        h('div', { class: 'addrow' }, [pinInput, h('button', { class: 'btn', type: 'button', onclick: connect, text: t('connectBtn') })]),
+        h('div', { class: 'hint err', id: 'connMsg', role: 'status', 'aria-live': 'polite', text: errKey ? t(errKey) : (noServer() ? t('noServerMod') : '') })
+      ])
+    ]));
+    pinInput.focus();
+  }
+
+  function showMain() {
+    var main = $('main'); main.textContent = '';
+    var joinUrl = (api || location.origin) + '/';
+    var left = h('div', { class: 'modcloud' }, [
+      h('div', { class: 'card cloudcard livecard' }, [h('div', { class: 'cloud livecloud', id: 'liveCloud', role: 'img' })])
+    ]);
+    var ownInput = h('input', { id: 'ownInput', class: 'inp', type: 'text', maxlength: String(LIMITS.wordLen), autocomplete: 'off',
+      onkeydown: function (e) { if (e.key === 'Enter') { e.preventDefault(); addOwn(); } } });
+    var right = h('aside', { class: 'modpanel' }, [
+      h('div', { class: 'card joinbar' }, [h('div', { class: 'qlabel', text: t('joinTitle') }), h('div', { class: 'joinurl', text: joinUrl })]),
+      h('h2', { text: t('listTitle') }),
+      h('p', { class: 'total', id: 'summary', 'aria-live': 'polite' }),
+      h('ul', { class: 'chips', id: 'wordList' }),
+      h('div', { class: 'card addbox' }, [
+        h('label', { class: 'field', for: 'ownInput', text: t('addLabel') }),
+        h('div', { class: 'addrow' }, [ownInput, h('button', { class: 'btn secondary', type: 'button', onclick: addOwn, text: t('addBtn') })])
+      ])
+    ]);
+    var bar = h('div', { class: 'toolbar', role: 'toolbar' }, [
+      h('span', { id: 'status', class: 'chipstatus warn', role: 'status', 'aria-live': 'polite' }),
+      h('button', { id: 'openBtn', class: 'btn secondary', type: 'button', onclick: toggleOpen }),
+      h('button', { id: 'panelBtn', class: 'btn secondary', type: 'button', onclick: togglePanel }),
+      h('button', { id: 'presBtn', class: 'btn secondary', type: 'button', 'aria-pressed': 'false', onclick: togglePresenter, text: t('present') }),
+      h('button', { class: 'btn secondary', type: 'button', onclick: fullscreen, text: t('fullscreen') }),
+      h('button', { id: 'demoBtn', class: 'btn secondary', type: 'button', 'aria-pressed': 'false', onclick: function () { setDemo(!S.demo); }, text: t('demoToggle') }),
+      h('button', { class: 'btn secondary', type: 'button', onclick: function () { window.print(); }, text: t('print') }),
+      h('button', { class: 'btn secondary', type: 'button', onclick: startOver, text: t('startOver') })
+    ]);
+    main.appendChild(h('section', { class: 'screen modscreen' }, [
+      h('div', { id: 'demoBox', hidden: true }, [h('p', { class: 'demo-note' }, [h('span', { class: 'badge', text: t('demoBadge') }), t('demoNote')])]),
+      h('p', { id: 'closedNote', class: 'closed-note', hidden: true, text: t('closedNote') }),
+      h('div', { class: 'qbar' }, [h('span', { class: 'modtag', text: t('mTag') }), h('h1', { class: 'qh', tabindex: '-1', text: WD.tx(QUESTION) })]),
+      bar,
+      h('div', { class: 'modgrid', id: 'modGrid' }, [left, right]),
+      h('p', { class: 'hint', text: t('shortcuts') })
+    ]));
+    renderLists(); renderControls();
+  }
+
+  /* ---------- print view ---------- */
+  function buildPrint() {
+    var box = $('print'); if (!box) return; box.textContent = '';
+    var list = shown();
+    box.appendChild(h('h1', { text: t('printTitle') }));
+    box.appendChild(h('p', { class: 'pq', text: WD.tx(QUESTION) }));
+    if (S.demo) box.appendChild(h('p', { class: 'demo-note', text: t('demoPrint') }));
+    if (list.length) {
+      var cloud = h('div', { class: 'cloud printcloud' }); WD.fillCloud(cloud, list, []); box.appendChild(cloud);
+      var tbl = h('table'), head = h('tr');
+      [t('thWord'), t('thCount')].forEach(function (x) { head.appendChild(h('th', { text: x })); });
+      tbl.appendChild(h('thead', null, [head]));
+      var body = h('tbody');
+      WD.sortedWords(list).forEach(function (x) { body.appendChild(h('tr', null, [h('td', { text: x.w }), h('td', { text: String(x.n) })])); });
+      tbl.appendChild(body); box.appendChild(tbl);
+    }
+    box.appendChild(h('p', { class: 'disclaimer', text: t('disclaimer') }));
+  }
+
+  /* ---------- start ---------- */
+  function build() {
+    document.title = t('mTag') + ' – ' + t('appName');
+    document.documentElement.lang = 'de';
+    WD.initTheme();
+    document.body.appendChild(h('header', { class: 'top' }, [h('div', { class: 'top-in' }, [WD.logoEl(), h('div', { class: 'tools' }, [WD.themeBtn()])])]));
+    document.body.appendChild(h('main', { id: 'main' }));
+    document.body.appendChild(h('div', { id: 'print', 'aria-hidden': 'true' }));
+    document.body.appendChild(WD.footer(t('privacy')));
+    WD.syncFooter(); window.addEventListener('resize', WD.syncFooter);
+    window.addEventListener('beforeprint', buildPrint);
+    document.addEventListener('keydown', function (e) {
+      var tag = (e.target && e.target.tagName) || '';
+      if (e.ctrlKey || e.metaKey || e.altKey || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || !S.connected && !$('modGrid')) return;
+      var k = e.key.toLowerCase();
+      if (k === 'p') togglePresenter(); else if (k === 'f') fullscreen(); else if (k === 'l') togglePanel();
+      else if (k === 'd') setDemo(!S.demo); else if (k === 't') WD.toggleTheme();
+    });
+    showConnect(null);
+    if (location.hash === '#selftest') { var r = window.selfTest(); document.title = r.failed ? 'SELFTEST FAILED' : 'SELFTEST OK'; }
+  }
+  window.selfTest = function () { return WD.selfTest(); };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build); else build();
+})();
+
+</script>
+</body>
+</html>
