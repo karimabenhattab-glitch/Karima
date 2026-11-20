@@ -318,6 +318,38 @@ button.hot:focus-visible { outline: 3px solid #1A62A8; outline-offset: 2px; }
 .recap summary { cursor: pointer; font-weight: 800; font-size: 1.1rem; padding: 8px 0; }
 .recap[open] summary { margin-bottom: 12px; }
 @media (max-width: 960px) { .qcols { grid-template-columns: minmax(0, 1fr); } }
+
+/* moderator board: free, draggable stickers */
+.freelayer { position: absolute; inset: 0; }
+.stk.free { position: absolute; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; z-index: 1; transition: box-shadow .15s; }
+.stk.free:hover { z-index: 2; }
+.stk.free:focus-visible { outline: 3px solid #1A62A8; outline-offset: 2px; }
+.stk.free.drag { cursor: grabbing; z-index: 5; box-shadow: 0 1cqw 2.4cqw rgba(11, 42, 74, .45); transform: rotate(0deg) scale(1.06); transition: none; }
+.stk.used { opacity: .6; }
+.stk.used::after { content: "✓"; position: absolute; left: -.6cqw; top: -.9cqw; width: 2.2cqw; height: 2.2cqw; line-height: 2.2cqw; text-align: center; border-radius: 50%; background: #1B6B3F; color: #fff; font-size: 1.4cqw; font-weight: 800; }
+.board.free .hot { pointer-events: none; }
+
+/* drag into Maßnahmen */
+.note.draggable { cursor: grab; }
+.note.dragging { opacity: .5; }
+.note-t { flex: 1 1 auto; min-width: 0; }
+.mini.take { width: auto; border-radius: 99px; padding: 0 12px; font-size: .85rem; white-space: nowrap; }
+.usedtag { flex: none; font-size: .8rem; font-weight: 800; color: #1B6B3F; white-space: nowrap; }
+.dropzone { border: 2px dashed var(--line); border-radius: var(--radius); padding: 12px 14px 4px; margin-bottom: 8px; transition: background .15s, border-color .15s; }
+.dropzone.hot { border-color: var(--accent); background: var(--accent-soft); }
+.dropzone > .hint { margin: 0 0 10px; }
+
+/* light snow in the background */
+#snow { position: fixed; inset: 0; z-index: 30; overflow: hidden; pointer-events: none; }
+#snow[hidden] { display: none; }
+.flake { position: absolute; top: -12px; border-radius: 50%; background: #8DB6E2; animation: fall linear infinite; will-change: transform; }
+@keyframes fall { from { transform: translate(0, 0); } to { transform: translate(var(--dx, 0), calc(100vh + 24px)); } }
+:root[data-theme="dark"] .flake { background: #FFFFFF; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .flake { background: #FFFFFF; } }
+header.top .icon-btn[aria-pressed="true"] { background: var(--hdr-on); color: var(--hdr-on-text); border-color: var(--hdr-on); }
+@media (prefers-reduced-motion: reduce) { #snow { display: none; } }
+@media print { #snow { display: none !important; } }
+
 @media print {
   #print ul { margin: 4pt 0 10pt; padding-left: 1.2em; }
   #print li { margin-bottom: 3pt; }
@@ -433,8 +465,14 @@ var STR = {
   phaseStickers: ["1 · Sticker sammeln"],
   phaseActions: ["2 · Maßnahmen"],
   phaseClosed: ["Eingabe schließen"],
-  phaseHintStickers: ["Teilnehmende kleben jetzt Sticker auf das Bild."],
-  phaseHintActions: ["Das Bild ist ausgeblendet. Teilnehmende tragen jetzt Maßnahmen ein."],
+  phaseHintStickers: ["Teilnehmende kleben jetzt Sticker auf das Bild. Du kannst Sticker mit der Maus oder dem Finger verschieben (oder mit den Pfeiltasten)."],
+  phaseHintActions: ["Das Bild ist ausgeblendet. Teilnehmende tragen jetzt Maßnahmen ein. Ziehe Sticker aus dem Rückblick in die Maßnahmen, um sie zu übernehmen."],
+  snowToggle: ["Schnee an oder aus"],
+  stickerAria: ["Sticker: {t}. Mit den Pfeiltasten verschieben."],
+  promoteBtn: ["→ Maßnahme"],
+  promoteAria: ["Als Maßnahme übernehmen: {t}"],
+  dropHint: ["Sticker hierher ziehen, um sie als Maßnahme zu übernehmen."],
+  usedMark: ["übernommen"],
   phaseHintClosed: ["Die Eingabe ist geschlossen."],
   joinTitle: ["Link für die Teilnehmenden"],
   fullscreen: ["Vollbild"],
@@ -491,7 +529,8 @@ var RT = (function () {
   }
   var ICON = {
     star: ['M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.2 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z'],
-    theme: ['M12 3a9 9 0 100 18 9 9 0 000-18z', 'M12 3v18']
+    theme: ['M12 3a9 9 0 100 18 9 9 0 000-18z', 'M12 3v18'],
+    flake: ['M12 2v20', 'M4 7l16 10', 'M4 17L20 7', 'M9.5 3.8L12 6l2.5-2.2', 'M9.5 20.2L12 18l2.5 2.2']
   };
   function clean(s, max) {
     return String(s == null ? '' : s).replace(/[\u0000-\u001F\u007F<>]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max).trim();
@@ -507,7 +546,10 @@ var RT = (function () {
       if (!x || typeof x !== 'object' || !by[x.k]) return;
       var id = Number(x.id); var txt = clean(x.t, x.k === 'act' ? LIMITS.action : LIMITS.sticker);
       if (!isFinite(id) || !txt) return;
-      by[x.k].push({ id: id, k: x.k, t: txt });
+      var o = { id: id, k: x.k, t: txt, u: x.u === true };
+      var px = (x.x === null || x.x === undefined) ? NaN : Number(x.x), py = (x.y === null || x.y === undefined) ? NaN : Number(x.y);
+      if (isFinite(px) && isFinite(py)) { o.x = Math.max(0, Math.min(100, px)); o.y = Math.max(0, Math.min(100, py)); }
+      by[x.k].push(o);
     });
     return by;
   }
@@ -527,8 +569,44 @@ var RT = (function () {
 
   /* ---------- page frame ---------- */
   function headerEl(extra) {
+    var tools = (extra || []).slice(), sb = snowBtn();
+    if (sb) tools.push(sb);
+    tools.push(themeBtn());
     return h('header', { class: 'top' }, [h('div', { class: 'top-in' }, [
-      h('div', { class: 'brand', text: t('appName') }), h('div', { class: 'tools' }, (extra || []).concat([themeBtn()]))])]);
+      h('div', { class: 'brand', text: t('appName') }), h('div', { class: 'tools' }, tools)])]);
+  }
+
+  /* ---------- light snow in the background (off for people who prefer reduced motion; button switches it) ---------- */
+  var SNOW_KEY = 'rt_snow', snowLayer = null;
+  function snowWanted() {
+    try { var v = localStorage.getItem(SNOW_KEY); if (v === '0' || v === '1') return v === '1'; } catch (e) { }
+    return true;
+  }
+  function initSnow() {
+    if (reduced() || snowLayer) return;
+    snowLayer = h('div', { id: 'snow', 'aria-hidden': 'true' });
+    for (var i = 0; i < 38; i++) {
+      var f = h('span', { class: 'flake' }), r = function (a, b) { return a + Math.random() * (b - a); };
+      f.style.left = r(0, 100).toFixed(1) + '%';
+      f.style.width = f.style.height = r(3, 7).toFixed(1) + 'px';
+      f.style.opacity = r(.4, .85).toFixed(2);
+      f.style.animationDuration = r(10, 22).toFixed(1) + 's';
+      f.style.animationDelay = '-' + r(0, 22).toFixed(1) + 's';
+      f.style.setProperty('--dx', r(-60, 60).toFixed(0) + 'px');
+      snowLayer.appendChild(f);
+    }
+    snowLayer.hidden = !snowWanted();
+    document.body.appendChild(snowLayer);
+  }
+  function snowBtn() {
+    if (reduced()) return null;
+    var b = h('button', { class: 'icon-btn', type: 'button', 'aria-label': t('snowToggle'), 'aria-pressed': snowWanted() ? 'true' : 'false', onclick: function () {
+      var on = snowLayer ? snowLayer.hidden : true;
+      if (snowLayer) snowLayer.hidden = !on;
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      try { localStorage.setItem(SNOW_KEY, on ? '1' : '0'); } catch (e) { }
+    } }, [svg(ICON.flake)]);
+    return b;
   }
   function footerEl() {
     return h('footer', { class: 'bottom' }, [h('div', { class: 'foot-in' }, [h('span', { text: t('footerTxt') }), h('span', { text: 'v' + APP.version })])]);
@@ -570,12 +648,78 @@ var RT = (function () {
       add: function (pin, k, text) { return rpc('rt_add', { p_pin: pin, p_kind: k, p_t: text }); },
       remove: function (pin, id) { return rpc('rt_remove', { p_pin: pin, p_id: id }); },
       phase: function (pin, p) { return rpc('rt_phase', { p_pin: pin, p_phase: p }); },
-      reset: function (pin) { return rpc('rt_reset', { p_pin: pin }); }
+      reset: function (pin) { return rpc('rt_reset', { p_pin: pin }); },
+      move: function (pin, id, x, y) { return rpc('rt_move', { p_pin: pin, p_id: id, p_x: x, p_y: y }); },
+      promote: function (pin, id) { return rpc('rt_promote', { p_pin: pin, p_id: id }); }
     };
   })();
 
   /* ---------- the picture with the three signs and the stickers ---------- */
-  function board(opts) {
+  function board(opts) { return opts.free ? freeBoard(opts) : gridBoard(opts); }
+
+  /* Moderator board: every sticker sits freely on the picture and can be dragged (mouse, finger) or moved with the arrow keys. */
+  function freeBoard(opts) {
+    var fig = h('figure', { class: 'board free' });
+    fig.appendChild(h('img', { class: 'board-img', src: BOARD_SRC, alt: t('boardAlt'), draggable: 'false' }));
+    QUESTIONS.forEach(function (q) { var hs = HOTS[q.k]; var hot = h('span', { class: 'hot ' + q.cls, 'aria-hidden': 'true' }); hot.style.left = hs.x + '%'; hot.style.top = hs.y + '%'; hot.style.width = hs.w + '%'; hot.style.height = hs.h + '%'; fig.appendChild(hot); });
+    var layer = h('div', { class: 'freelayer' }); fig.appendChild(layer);
+    var dragging = false, pending = null;
+    function slot(q, i) {
+      var z = ZONES[q.k], slots = z.cols * z.rows, s = i % slots, round = Math.floor(i / slots), cw = z.w / z.cols, ch = z.h / z.rows;
+      return { x: z.x + (s % z.cols) * cw + round * 0.9, y: z.y + Math.floor(s / z.cols) * ch + round * 0.9, w: cw * 0.93, h: ch * 0.9 };
+    }
+    function clamp(v, max) { return Math.max(0, Math.min(max, v)); }
+    function build(q, it, i, fresh) {
+      var p = slot(q, i), x = it.x !== undefined ? it.x : p.x, y = it.y !== undefined ? it.y : p.y;
+      var isNew = !!(fresh && fresh[it.id]);
+      var el = h('span', { class: 'stk free ' + q.cls + (isNew ? ' new' : '') + (it.u ? ' used' : ''), tabindex: '0', role: 'group', 'aria-label': t('stickerAria', { t: it.t }) }, [h('span', { class: 'stk-t', text: it.t })]);
+      el.style.left = clamp(x, 100 - p.w).toFixed(2) + '%'; el.style.top = clamp(y, 100 - p.h).toFixed(2) + '%';
+      el.style.width = p.w.toFixed(2) + '%'; el.style.height = p.h.toFixed(2) + '%';
+      el.style.setProperty('--r', ((hashOf(String(it.id)) % 9) - 4) + 'deg');
+      el.dataset.w = p.w; el.dataset.h = p.h;
+      if (isNew && !reduced()) {
+        var star = h('span', { class: 'star', 'aria-hidden': 'true' }, [svg(ICON.star)]);
+        el.appendChild(star);
+        (function (s) { var rm = function () { if (s.parentNode) s.parentNode.removeChild(s); }; s.addEventListener('animationend', rm); setTimeout(rm, 2200); })(star);
+      }
+      el.addEventListener('pointerdown', function (e) { if (e.button > 0) return; e.preventDefault(); startDrag(el, it, e); });
+      var kt = null;
+      el.addEventListener('keydown', function (e) {
+        var d = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key]; if (!d) return;
+        e.preventDefault();
+        var w = parseFloat(el.dataset.w), hh = parseFloat(el.dataset.h);
+        el.style.left = clamp(parseFloat(el.style.left) + d[0], 100 - w).toFixed(2) + '%'; el.style.top = clamp(parseFloat(el.style.top) + d[1], 100 - hh).toFixed(2) + '%';
+        clearTimeout(kt); kt = setTimeout(function () { it.x = parseFloat(el.style.left); it.y = parseFloat(el.style.top); if (opts.onMove) opts.onMove(it.id, it.x, it.y); }, 500);
+      });
+      return el;
+    }
+    function startDrag(el, it, e) {
+      var rect = fig.getBoundingClientRect(), sx = e.clientX, sy = e.clientY, ox = parseFloat(el.style.left), oy = parseFloat(el.style.top);
+      var w = parseFloat(el.dataset.w), hh = parseFloat(el.dataset.h), moved = false;
+      dragging = true; el.classList.add('drag'); el.classList.remove('new'); el.focus({ preventScroll: true });
+      try { el.setPointerCapture(e.pointerId); } catch (x) { }
+      function move(ev) {
+        var dx = (ev.clientX - sx) / rect.width * 100, dy = (ev.clientY - sy) / rect.height * 100;
+        if (Math.abs(dx) + Math.abs(dy) > 0.3) moved = true;
+        el.style.left = clamp(ox + dx, 100 - w).toFixed(2) + '%'; el.style.top = clamp(oy + dy, 100 - hh).toFixed(2) + '%';
+      }
+      function up() {
+        window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); window.removeEventListener('pointercancel', up);
+        dragging = false; el.classList.remove('drag');
+        if (moved) { it.x = parseFloat(el.style.left); it.y = parseFloat(el.style.top); if (opts.onMove) opts.onMove(it.id, it.x, it.y); }
+        if (pending) { var p = pending; pending = null; update(p[0], p[1]); }
+      }
+      window.addEventListener('pointermove', move); window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
+    }
+    function update(by, fresh) {
+      if (dragging) { pending = [by, fresh]; return; }
+      layer.textContent = '';
+      QUESTIONS.forEach(function (q) { (by[q.k] || []).forEach(function (it, i) { layer.appendChild(build(q, it, i, fresh)); }); });
+    }
+    return { el: fig, update: update, select: function () { } };
+  }
+
+  function gridBoard(opts) {
     var fig = h('figure', { class: 'board' });
     fig.appendChild(h('img', { class: 'board-img', src: BOARD_SRC, alt: t('boardAlt'), draggable: 'false' }));
     var layers = {}, hots = {};
@@ -636,7 +780,7 @@ var RT = (function () {
   }
 
   return { t: t, h: h, $: $, svg: svg, ICON: ICON, reduced: reduced, clean: clean, hashOf: hashOf, qOf: qOf, group: group,
-    initTheme: initTheme, headerEl: headerEl, footerEl: footerEl, syncFooter: syncFooter, deviceId: deviceId, net: net, board: board, selfTest: selfTest };
+    initTheme: initTheme, initSnow: initSnow, headerEl: headerEl, footerEl: footerEl, syncFooter: syncFooter, deviceId: deviceId, net: net, board: board, selfTest: selfTest };
 })();
 
 </script>
@@ -802,6 +946,7 @@ var RT = (function () {
     document.documentElement.lang = 'de';
     RT.initTheme();
     document.body.appendChild(RT.headerEl());
+    RT.initSnow();
     document.body.appendChild(h('main', { id: 'main', class: 'pmain wide' }));
     document.body.appendChild(RT.footerEl());
     RT.syncFooter(); window.addEventListener('resize', RT.syncFooter);
